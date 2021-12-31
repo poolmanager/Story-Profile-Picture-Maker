@@ -102,6 +102,7 @@ def SaveImage():
         return print(error)
     else:
         msgbox.showinfo("저장 성공", f"{FileName}.png로 저장되었습니다.")
+        FileName = os.urandom(10).hex()
 
 root = Tk()
 root.title("스토리 프사 생성기")
