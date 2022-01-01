@@ -1,9 +1,2 @@
-# 얘!
-에셋 폴더는 지우면 안된단다!
-
-# 다운로드는
-해라. 알아서. <br>
-참고로 파이썬 3.9.9에서 개발된!
-
-# 경고
-파이썬에서 쓰려면 Pillow 패키지를 필요로
+# 다운로드
+[여기](https://github.com/poolmanager/Story-Profile-Picture-Maker/releases/)서 다운로드 받으세요!
