@@ -23,7 +23,7 @@ import time
 import _thread
 import pathlib
 
-AssetsPath = fr"{str(pathlib.Path(__file__).parent.resolve())}\{'assets'}"
+AssetsPath = fr"{str(pathlib.Path().parent.resolve())}\{'assets'}"
 FileName = os.urandom(10).hex()
 
 if sys.platform.startswith("win"):
@@ -81,6 +81,7 @@ def ShowPreviewImage():
     _root.title("미리보기")
     _root.geometry("500x500")
     _root.resizable(False, False)
+    _root.iconbitmap(os.path.join(AssetsPath, "STORY.ico"))
 
     image = PhotoImage(file=f"{FileName}.png", master=_root)
     image_label = Label(_root, image=image)
@@ -108,6 +109,7 @@ root = Tk()
 root.title("스토리 프사 생성기")
 root.resizable(False, False)
 root.geometry("500x500")
+root.iconbitmap(os.path.join(AssetsPath, "STORY.ico"))
 
 Text = StringVar(value="글자가 설정되지 않았습니다.")
 
