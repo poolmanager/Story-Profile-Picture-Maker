@@ -14,23 +14,25 @@ from tkinter import (
     PhotoImage,
 )
 
+from contextlib import closing
+
 import re
 import os
 import sys
-import _thread
 import time
+import _thread
+import pathlib
 
-AssetsPath = os.getcwd() + "\\assets"
+AssetsPath = fr"{str(pathlib.Path(__file__).parent.resolve())}\{'assets'}"
 FileName = os.urandom(10).hex()
 
 if sys.platform.startswith("win"):
     import ctypes
-    ctypes.windll.shcore.SetProcessDpiAwareness(ctypes.byref(ctypes.c_int()))
+    ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 if not os.path.isfile(os.path.join(AssetsPath, "base.png")):
-    image = Image.new("RGB", size=(500, 500))
-    image.save(r"assets\base.png")
-    image.close()
+    with closing(Image.new("RGB", size=(500, 500))) as NewImage:
+        NewImage.save(r"assets\base.png")
 
 def _TextSetter(variable: StringVar, EntryBox: Entry):
     while True:
@@ -41,7 +43,6 @@ def _TextSetter(variable: StringVar, EntryBox: Entry):
         time.sleep(.001)
 
 def CreateStoryProfilePicture(Text, Size = None):
-    global FileName
     if Size:
         if not str(Size).isnumeric():
             msgbox.showerror("오류", "글자 크기가 올바른 정수로 설정되지 않았습니다!")
@@ -49,7 +50,7 @@ def CreateStoryProfilePicture(Text, Size = None):
 
         if int(Size) >= 60:
             msgbox.showerror("오류", "글자 크기는 60보다 클 수 없습니다!")
-            raise Exception("Exception for handling")
+            raise Exception("Exception for handling")        
 
     if len(Text) >= 100:
         msgbox.showerror("오류", "텍스트는 100 글자를 넘을 수 없습니다!")
@@ -63,16 +64,15 @@ def CreateStoryProfilePicture(Text, Size = None):
         msgbox.showerror("오류", "텍스트는 무조건 영어여야합니다!")
         raise Exception("Exception for handling")
 
-    with Image.open(os.path.join(AssetsPath, "base.png")) as BaseImage:
+    with closing(Image.open(os.path.join(AssetsPath, "base.png")) )as BaseImage:
         draw = ImageDraw.Draw(BaseImage, "RGB")
-        draw.text((500/2, 500/2), Text, font=ImageFont.truetype(os.path.join(AssetsPath, "LuckiestGuy-Regular.ttf"), size=round(10000 / (len(Text) * 20)) if Size == None else Size), align="center", anchor="mm")
+        draw.text((500/2, 500/2), Text, font=ImageFont.truetype(os.path.join(AssetsPath, "LuckiestGuy-Regular.ttf"), size=round(1000 / (len(Text) * 2)) if Size == None else Size * 2), align="center", anchor="mm")
 
-    return BaseImage.save(f"{FileName}.png")
+        return BaseImage.save(f"{FileName}.png")
 
 def ShowPreviewImage():
-    global BottomText, SizeEntry, FileName
     try:
-        CreateStoryProfilePicture(Text=BottomText.get(), Size=(SizeEntry.get() if SizeEntry.get() not in ("글자 크기", "") else None))
+        CreateStoryProfilePicture(Text=BottomText.get(), Size=(int(SizeEntry.get()) if SizeEntry.get() not in ("글자 크기", "") else None))
     except Exception as e:
         print(e)
         return None
@@ -95,7 +95,7 @@ def ShowPreviewImage():
     _root.mainloop()
 
 def SaveImage():
-    global BottomText, SizeEntry, FileName
+    global FileName
     try:
         CreateStoryProfilePicture(Text=BottomText.get(), Size=(SizeEntry.get() if SizeEntry.get() not in ("글자 크기", "") else None))
     except Exception as error:
@@ -118,11 +118,12 @@ PreviewButton = Button(root, text="미리 보기", command=ShowPreviewImage)
 SaveButton = Button(root, text="저장하기", command=SaveImage)
 
 if __name__ == "__main__":
+    _thread.start_new_thread(_TextSetter, (Text, BottomText))
     BottomText.insert(0, "텍스트")
-    BottomText.pack(fill="x")
     SizeEntry.insert(0, "글자 크기")
+    BottomText.pack(fill="x")
+    SizeEntry.pack()
     TextViewer.pack()
     PreviewButton.pack()
     SaveButton.pack()
-    _thread.start_new_thread(_TextSetter, (Text, BottomText))
     root.mainloop()
